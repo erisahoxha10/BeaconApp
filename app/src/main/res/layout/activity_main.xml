@@ -48,7 +48,7 @@
             android:hint="Beacon URL"
             android:textSize="25dp" />
 
-        <EditText
+        <TextView
             android:id="@+id/beacon_voltage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
             android:hint="Voltage"
             android:textSize="25dp" />
 
-        <EditText
+        <TextView
             android:id="@+id/beacon_temperature"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             android:hint="Temperature"
             android:textSize="25dp"/>
 
-        <EditText
+        <TextView
             android:id="@+id/beacon_distance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

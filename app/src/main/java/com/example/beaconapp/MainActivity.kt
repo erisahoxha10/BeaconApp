@@ -66,6 +66,8 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, RangeNotifier {
 //        val region = Region("all-beacons-region", null, null, null)
         beaconManager?.getBeaconParsers()!!
             .add(BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_URL_LAYOUT))
+        beaconManager?.getBeaconParsers()!!
+            .add(BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_TLM_LAYOUT))
         beaconManager?.bind(this)
 
         scanLeDevice()
@@ -196,8 +198,6 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, RangeNotifier {
 //                    tv_humidity_value.text = "$degrees.$points%";
 //                }
             }
-
-
         }
 
 
@@ -236,11 +236,48 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, RangeNotifier {
             if (beacon.serviceUuid === 0xfeaa && beacon.beaconTypeCode === 0x10) {
                 // This is a Eddystone-URL frame
                 val url = UrlBeaconUrlCompressor.uncompress(beacon.id1.toByteArray())
-                beacon_url.text = "URL" + url
+                beacon_url.text = "URL: " + url
+                beacon_voltage.text = "Voltage: " + beacon.extraDataFields.get(1)
+//                var result = characteristic.getFloatValue(52,1)
+//
+//                tv_temp_value.text = "$result°C";
+                beacon_temperature.text = "Temp: " + beacon.extraDataFields.get(2)
+                beacon_distance.text = "Dist: " + beacon.distance
+
+                for (kot in beacon.extraDataFields){
+                    Log.i("Kot", "$kot")
+                }
+
                 Log.i(
                     "TAG", "I see a beacon transmitting a url: " + url +
                             " approximately " + beacon.distance + " meters away."
                 )
+            }
+
+            if (beacon.serviceUuid === 0xfeaa && beacon.beaconTypeCode === 0x00) {
+                // This is a Eddystone-UID frame
+                val namespaceId = beacon.id1
+                val instanceId = beacon.id2
+                Log.d(
+                    "TAG", "I see a beacon transmitting namespace id: " + namespaceId +
+                            " and instance id: " + instanceId +
+                            " approximately " + beacon.distance + " meters away."
+                )
+
+                // Do we have telemetry data?
+                if (beacon.extraDataFields.size > 0) {
+                    val telemetryVersion = beacon.extraDataFields[0]
+                    val batteryMilliVolts = beacon.extraDataFields[1]
+                    val pduCount = beacon.extraDataFields[3]
+                    val uptime = beacon.extraDataFields[4]
+                    beacon_voltage.text = "voltage" + batteryMilliVolts
+                    Log.i(
+                        "TAG", "The above beacon is sending telemetry version " + telemetryVersion +
+                                ", has been up for : " + uptime + " seconds" +
+                                ", has a battery level of " + batteryMilliVolts + " mV" +
+                                ", and has transmitted " + pduCount + " advertisements."
+                    )
+                }
             }
         }
     }
