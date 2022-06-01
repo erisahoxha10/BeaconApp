@@ -6,23 +6,21 @@ import android.bluetooth.*
 import android.bluetooth.le.*
 import android.content.ContentValues
 import android.content.Context
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Handler
-import android.os.ParcelUuid
+import android.os.*
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import org.altbeacon.beacon.BeaconManager
-import org.altbeacon.beacon.BeaconParser
+import org.altbeacon.beacon.*
+import org.altbeacon.beacon.utils.UrlBeaconUrlCompressor
 import java.util.*
 
 
 const val DEVICE_MAC_ADDRESS = "F8:20:74:F7:2B:82"
 const val SERVICE_UUID = "0000feaa-0000-1000-8000-00805f9b34fb"
 
-class MainActivity : AppCompatActivity() {
+@Suppress("DEPRECATION")
+class MainActivity : AppCompatActivity(), BeaconConsumer, RangeNotifier {
 
     private var mBluetoothManager: BluetoothManager? = null
     private var mBluetoothAdapter: BluetoothAdapter? = null
@@ -65,6 +63,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         beaconManager =  BeaconManager.getInstanceForApplication(this)
+//        val region = Region("all-beacons-region", null, null, null)
+        beaconManager?.getBeaconParsers()!!
+            .add(BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_URL_LAYOUT))
+        beaconManager?.bind(this)
 
         scanLeDevice()
 
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
 
             bluetoothLeScanner!!.startScan(filters, settings, leScanCallback)
+
 
         } else {
             scanning = false
@@ -138,8 +141,6 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-            beaconManager?.getBeaconParsers()?.add(BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_URL_LAYOUT))
-            
 //            beaconSet.add(beacon)
 //            (recyclerView.adapter as BeaconsAdapter).updateData(beaconSet.toList(),beaconTypePositionSelected)
         }
@@ -214,6 +215,34 @@ class MainActivity : AppCompatActivity() {
             hexChars[j * 2 + 1] = HEX[v and 0x0F]
         }
         return String(hexChars)
+    }
+
+    override fun onBeaconServiceConnect() {
+        val region = Region("all-beacons-region", null, null, null)
+        try {
+            beaconManager?.startRangingBeaconsInRegion(region)
+        } catch (e: RemoteException) {
+            e.printStackTrace()
+        }
+        beaconManager?.setRangeNotifier(this)
+    }
+
+    override fun didRangeBeaconsInRegion(
+        beacons: MutableCollection<org.altbeacon.beacon.Beacon>?,
+        region: Region?
+    ) {
+
+        for (beacon in beacons!!) {
+            if (beacon.serviceUuid === 0xfeaa && beacon.beaconTypeCode === 0x10) {
+                // This is a Eddystone-URL frame
+                val url = UrlBeaconUrlCompressor.uncompress(beacon.id1.toByteArray())
+                beacon_url.text = "URL" + url
+                Log.i(
+                    "TAG", "I see a beacon transmitting a url: " + url +
+                            " approximately " + beacon.distance + " meters away."
+                )
+            }
+        }
     }
 
 }
