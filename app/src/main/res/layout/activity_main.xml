@@ -22,7 +22,7 @@
             android:text="Beacon Data"
             android:textSize="25sp"
             android:gravity="center"
-            app:layout_constraintTop_toTopOf="@id/beacon_id" />
+            app:layout_constraintTop_toTopOf="@id/beacon_instanceId" />
 
 
         <LinearLayout
@@ -32,45 +32,86 @@
             android:layout_gravity="center"
             android:orientation="vertical">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:hint="Beacon ID:"
+                android:textSize="25dp" />
         <TextView
-            android:id="@+id/beacon_id"
+            android:id="@+id/beacon_instanceId"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:hint="Beacon ID"
-            android:textSize="25dp" />
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:hint="Beacon InstanceId"
+            android:textSize="15dp" />
 
+            <TextView
+                android:id="@+id/beacon_namespaceId"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:hint="Beacon NamespaceId"
+                android:textSize="15dp" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:hint="Beacon URL:"
+                android:textSize="25dp" />
         <TextView
             android:id="@+id/beacon_url"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
             android:hint="Beacon URL"
-            android:textSize="25dp" />
+            android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:hint="Beacon Voltage:"
+                android:textSize="25dp" />
 
         <TextView
             android:id="@+id/beacon_voltage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
             android:hint="Voltage"
-            android:textSize="25dp" />
+            android:textSize="15dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:hint="Temperature:"
+                android:textSize="25dp"/>
 
         <TextView
             android:id="@+id/beacon_temperature"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
             android:hint="Temperature"
-            android:textSize="25dp"/>
+            android:textSize="15dp"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:hint="Distance:"
+                android:textSize="25dp"/>
         <TextView
             android:id="@+id/beacon_distance"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
             android:hint="Distance"
-            android:textSize="25dp"/>
+            android:textSize="15dp"/>
 
         </LinearLayout>
 
