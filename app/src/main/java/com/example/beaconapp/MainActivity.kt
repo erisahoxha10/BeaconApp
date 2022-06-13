@@ -1,14 +1,9 @@
 package com.example.beaconapp
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.bluetooth.*
-import android.bluetooth.le.BluetoothLeScanner
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.RemoteException
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,18 +17,7 @@ const val SERVICE_UUID = "0000feaa-0000-1000-8000-00805f9b34fb"
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), BeaconConsumer, RangeNotifier {
 
-    private var mBluetoothManager: BluetoothManager? = null
-    private var mBluetoothAdapter: BluetoothAdapter? = null
-    private  var  bluetoothLeScanner: BluetoothLeScanner? = null
     private var beaconManager: BeaconManager? = null
-    var bluetoothGatt: BluetoothGatt? = null
-
-    var scanning = false
-    val handler = Handler()
-
-    // Stops scanning after 10 seconds.
-    private val SCAN_PERIOD: Long = 10000
-
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,40 +42,6 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, RangeNotifier {
         beaconManager?.getBeaconParsers()!!
             .add(BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_TLM_LAYOUT))
         beaconManager?.bind(this)
-
-
-    }
-
-    private val bluetoothGattCallback = object : BluetoothGattCallback() {
-        @SuppressLint("MissingPermission")
-        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                Log.i("HEY", " GATT Successfully Connected ")
-                gatt!!.discoverServices()
-
-            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-
-                Log.i("HEY", " GATT Successfully disconnected")
-            }
-        }
-
-        @SuppressLint("MissingPermission")
-        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-            super.onServicesDiscovered(gatt, status)
-
-        }
-
-        @SuppressLint("SetTextI18n")
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt?,
-            characteristic: BluetoothGattCharacteristic?,
-            status: Int
-        ) {
-            super.onCharacteristicRead(gatt, characteristic, status)
-            if (characteristic != null) {
-
-            }
-        }
 
 
     }
@@ -131,7 +81,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer, RangeNotifier {
                 val unsignedTemp = beacon.extraDataFields[2] shr 8
                 val temperature =
                     if (unsignedTemp > 128) (unsignedTemp - 256).toDouble() else unsignedTemp + (beacon.extraDataFields[2] and 0xff) / 256.0
-                beacon_temperature.text = temperature.toString() + ""
+                beacon_temperature.text = temperature.toString() + "°C"
 
             }
         }
